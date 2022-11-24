@@ -1,0 +1,225 @@
+"===========================================================================
+" .vimrc config by Pavel Pavlov 2022
+"===========================================================================
+
+
+"===========================================================================
+" Общие настройки:
+"===========================================================================
+
+set nocompatible                    " отключить совместимость с Vi
+
+" Leader key to add extra key combinations
+let mapleader = ' '
+let g:mapleader = ' '
+
+set history=1000                    " сколько строк команд запоминать
+set timeoutlen=1000 ttimeoutlen=100 " временная задержка сочетаний клавиш
+set updatetime=250                  "
+
+set scrolloff=10                    " смещать экран за Х строк до края
+set showcmd                         " показ нажатых клавиш
+
+set wildmenu                        "
+set wildoptions=pum                 " показ в виде вертикального меню
+set wildignorecase                  " игнорировать регистр для wildmenu
+
+set cmdheight=2                     " высота командной строки
+set backspace=eol,start,indent      "
+set lazyredraw                      "
+
+set showmatch                       " подсвечивать парные элементы
+set matchtime=2                     "
+
+set noerrorbells                    " отключить звуковое оповещение
+set novisualbell                    " отключить визуальное оповещение
+set mouse=a                         " включить поддержку мыши
+
+if !has('gui_running')              "
+  set t_Co=256
+endif
+set cursorline                      "
+syntax enable                       "
+colorscheme molokai                 "
+set background=dark                 " включить темную тему
+
+set noswapfile                      " отключить свап файл
+set nobackup                        " отключить бэкап
+set nowritebackup                   "
+
+set encoding=utf8                   " кодировка UTF8
+set fileformat=unix,dos,mac         "
+
+set autoread                        " перечитать файл если изменился
+au FocusGained,BufEnter *           " перечитать файл когда окно опять ..
+        \ checktime                 " в фокусе или переключился буфер
+
+filetype plugin indent on           "
+set hidden                          "
+set fileignorecase                  "
+set viminfo^=%                      "
+
+" можно подвинуться на 1 пробел в конце строки
+set virtualedit=onemore 
+set autoindent                      " автоотсуп
+set smartindent                     " умные отступы
+set noexpandtab                     " пробелы вместо табуляции
+set smarttab                        "
+set shiftwidth=4                    "
+set tabstop=4                       " ширина отступа
+
+set whichwrap+=<,>,h,l              "
+set wrap                            " разбивать на строки при выходе
+set linebreak                       " разбивать строку по слову
+set textwidth=100                   " разбивать строку на Х символах
+
+set number                          " показывать абсолютный номер строки
+set relativenumber                  " показывать относительный номер строки
+set numberwidth=2                   " ширина колонки номера строки
+
+set hlsearch                        " подсвечивать найденные элементы
+set incsearch                       " показывать поиск при наборе строки
+set wrapscan                        " закольцовывать поиск при окончании
+set ignorecase                      " игнорировать заглавные при поиске
+set magic                           "
+set smartcase                       " учитывать заглавные буквы в запросе
+
+set maxmempattern=1000              "
+
+set foldmethod=indent               "
+set foldnestmax=3                   "
+set nofoldenable                    "
+set foldcolumn=2                    "
+
+set cursorline                      " подсвечивать текущую строку
+au InsertEnter,InsertLeave *        " отключать подсветку текущей ..
+             \ set cursorline!      " ..строки в INSERT режиме
+
+set langmenu-en_US                  " задать язык локализации Vim
+set $LANG='en_US'                   "
+
+set splitbelow                      " Открывать новое окно внизу
+set splitright                      " или справа
+
+set spelllang=en_US,ru_RU           " Выбор языков словаря
+set autochdir                       " Сменить папку автоматичски
+
+set laststatus=2                    " Всегда показывать строку статуса
+set ruler                           " включить показ координат курсора
+
+" относительные номера строк не видны в режиме вставки
+augroup every
+  autocmd!
+  au InsertEnter * set norelativenumber
+  au InsertLeave * set relativenumber
+augroup END
+
+" при перемещении вверх/вниз считает строку, разбитую на несколько линий как одну
+nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
+nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
+
+autocmd BufReadPost *
+	\ if line("'\"") > 0 && line("'\"") <= line("$") |
+	\   exe "normal! g`\"" |
+	\ endif
+
+"==========================================================================
+" Status Line
+"==========================================================================
+set laststatus=2                                        " Enable the statusline
+set statusline=%!ActiveStatus()                         " Style it
+
+function! ActiveStatus() abort                          " When in the active window
+    let statusline=""                                   " Initialize it
+    let statusline.="%#WildMenu#%{virtualenv#statusline()}"
+    let statusline.="%#StatusLine#%F\ "                 " Full-path to current buffer
+    let statusline.="%m"                                " Modified flag:
+    let statusline.="%#StatusLineNC#\ \ "               " Show Git branch, if applicable
+    let statusline.="%=%#StatusLine#"                   " Switch to right-side
+    let statusline.="\ %p%%\ %y\ "                      " Filetype
+    let statusline.="%"                                 " Color change (see :hi)
+    let statusline.="\|%2l\:%2c\|"                      " Line and column
+    let statusline.="%#SpellBad#%{&spell?'[SPELL]':''}" " Spell flag
+    let statusline.="%r"                                " Read-only flag
+    return statusline
+endfunction
+
+function! PassiveStatus() abort                         " When in a non-active window
+    let statusline=""                                   " Initialize it
+    let statusline.="%#StatusLineNC#%m"                 " Modified flag
+    let statusline.="%F/"                               " Full-path to current buffer
+    let statusline.="\ \ "                              " Show Git branch, if applicable
+    let statusline.="%=\ "               " Switch to right-side
+    let statusline.="%p%%\ %y\ "                        " Filetype
+    let statusline.="\|%4l\:%2c\|"                      " Line and column
+    let statusline.="%#SpellBad#%{&spell?'[SPELL]':''}" " Spell flag
+    let statusline.="%r"                                " Read-only flag
+    return statusline
+endfunction
+
+augroup user_statusline                         " Change based on active window
+    autocmd!
+    autocmd WinEnter * setlocal statusline=%!ActiveStatus()
+    autocmd WinLeave * setlocal statusline=%!PassiveStatus()
+augroup END
+
+
+
+"======================================
+" Plugin list:
+"======================================
+call plug#begin()
+ 
+" Поддержка русского языка при переключении режимов
+Plug 'lyokha/vim-xkbswitch'
+" Поддержка LSP       
+Plug 'w0rp/ale'
+
+Plug 'jmcantrell/vim-virtualenv'
+
+" Темы
+Plug 'morhetz/gruvbox'                 " Gruvbox
+Plug 'tomasr/molokai'                  " Molokai
+Plug 'sonph/onehalf', { 'rtp': 'vim' } " OneHalf
+Plug 'gosukiwi/vim-atom-dark'          " Atom-dark
+Plug 'arcticicestudio/nord-vim'
+Plug 'NLKNguyen/papercolor-theme'
+
+" Управление обрамляющими символами
+Plug 'tpope/vim-surround'
+" Файловый менеджер
+Plug 'scrooloose/nerdtree'
+" Плавный скроллинг
+Plug 'yuttie/comfortable-motion.vim'
+" навигация по буквенным символам
+Plug 'easymotion/vim-easymotion'
+" много функций в сочетании с [ и ]
+Plug 'tpope/vim-unimpaired'
+" простые коментарии
+Plug 'tpope/vim-commentary'
+" команды git
+Plug 'tpope/vim-fugitive'
+" команды Unix из командной строки
+Plug 'tpope/vim-eunuch'
+" авто настройка отступов
+Plug 'tpope/vim-sleuth'
+" команды GitHub
+Plug 'tpope/vim-rhubarb'
+" повтор с точкой для плагинов
+Plug 'tpope/vim-repeat'
+
+
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'markonm/hlyank.vim'       " подсветить скопированное
+
+Plug 'godlygeek/tabular'        " настройка выравнивания
+Plug 'junegunn/vim-easy-align'
+Plug 'junegunn/goyo.vim'        " дзен режим
+Plug 'raimondi/delimitmate'     " двойные кавычки
+
+
+call plug#end()
+
+=========================================================================
+
