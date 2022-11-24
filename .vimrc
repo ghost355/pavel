@@ -62,6 +62,7 @@ Plug 'luochen1990/rainbow'
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
+Plug 'vitalk/vim-simple-todo'
 
 
 
@@ -318,7 +319,8 @@ nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 
-
+" Autocometition off on FileTypes
+autocmd FileType markdown let b:coc_suggest_disable = 1
 
 
 " EasyAlign settings and map
@@ -722,5 +724,28 @@ try
     set undofile
 catch
 endtry
+
+" TODO list fast command
+command! Todo :e TODO.md
+nnoremap <Leader><Esc> :Todo<CR>
+
+" # Disable default key bindings
+let g:simple_todo_map_keys=0
+
+" # Map your keys
+nnoremap <Leader>I <Plug>(simple-todo-new)
+nnoremap <Leader>i <Plug>(simple-todo-new-start-of-line)
+nnoremap <Leader>o <Plug>(simple-todo-below)
+nnoremap <Leader>O <Plug>(simple-todo-above)
+nnoremap <Leader>x <Plug>(simple-todo-mark-switch)
+
+
+
+set spelllang=en_US,ru_RU           " Выбор языков словаря
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Spell checking
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Pressing space-ss will toggle and untoggle spell checking
+map <leader>ss :setlocal spell!<cr>
 
 
