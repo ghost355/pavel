@@ -63,8 +63,7 @@ Plug 'luochen1990/rainbow'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 Plug 'vitalk/vim-simple-todo'
-
-
+Plug 'francoiscabrol/ranger.vim'
 
 call plug#end()
 
@@ -74,6 +73,8 @@ set completeopt=menu,menuone,preview,noselect,noinsert
 " Plugin settings:
 "======================================
 
+let g:ranger_map_keys = 0
+nnoremap <leader>r :Ranger<CR>
 
 "======================================
 " Markdown settings:
@@ -680,7 +681,8 @@ function! ActiveStatus() abort                          " When in the active win
     let statusline.="%F\ "                 " Full-path to current buffer
     let statusline.="%m"                                " Modified flag:
     let statusline.="%#NonText#\ \ %="                  " Show Git branch, if applicable
-    let statusline.="%{coc#status()}%{get(b:,'coc_current_function','')}\ \ " " Switch to right-side
+    let statusline.="%{coc#status()}\ \ " " Switch to right-side
+    " let statusline.="%{StatusDiagnostic()}\ \ " " Switch to right-side
     let statusline.="%#StatusLine#\ %p%%\ %y\ "                      " Filetype
     let statusline.="%"                                 " Color change (see :hi)
     let statusline.="\|%2l\:%2c\|"                      " Line and column
@@ -708,6 +710,18 @@ endfunction
      autocmd WinLeave * setlocal statusline=%!PassiveStatus()
  augroup END
 
+function! StatusDiagnostic() abort
+  let info = get(b:, 'coc_diagnostic_info', {})
+  if empty(info) | return '' | endif
+  let msgs = []
+  if get(info, 'error', 0)
+    call add(msgs, 'X ' . info['error'])
+  endif
+  if get(info, 'warning', 0)
+    call add(msgs, '!' . info['warning'])
+  endif
+  return join(msgs, ' '). ' ' . get(g:, 'coc_status', '')
+endfunction
 
 " Smart way to move between windows
 map <C-j> <C-W>j
@@ -741,11 +755,12 @@ nnoremap <Leader>x <Plug>(simple-todo-mark-switch)
 
 
 
-set spelllang=en_US,ru_RU           " Выбор языков словаря
+set spelllang=en,ru           " Выбор языков словаря
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Spell checking
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Pressing space-ss will toggle and untoggle spell checking
 map <leader>ss :setlocal spell!<cr>
+
 
 
