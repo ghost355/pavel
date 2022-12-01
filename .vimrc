@@ -25,8 +25,6 @@ Plug 'NLKNguyen/papercolor-theme'
 
 " Управление обрамляющими символами
 Plug 'tpope/vim-surround'
-" Файловый менеджер
-Plug 'scrooloose/nerdtree'
 " Плавный скроллинг
 Plug 'yuttie/comfortable-motion.vim'
 " навигация по буквенным символам
@@ -45,16 +43,16 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-rhubarb'
 " повтор с точкой для плагинов
 Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-vinegar'
 
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 Plug 'markonm/hlyank.vim'              " подсветить скопированное
 
-Plug 'godlygeek/tabular'
+Plug 'godlygeek/tabular'               " выравнивание
 Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/goyo.vim'               " дзен режим
-" Plug 'raimondi/delimitmate'          " двойные кавычки
 
 Plug 'luochen1990/rainbow'
 
@@ -63,7 +61,6 @@ Plug 'luochen1990/rainbow'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 Plug 'vitalk/vim-simple-todo'
-Plug 'francoiscabrol/ranger.vim'
 
 call plug#end()
 
@@ -72,9 +69,18 @@ set completeopt=menu,menuone,preview,noselect,noinsert
 "======================================
 " Plugin settings:
 "======================================
-
-let g:ranger_map_keys = 0
-nnoremap <leader>r :Ranger<CR>
+"======================================
+" Netrw settings:
+"======================================
+" let g:netrw_banner = 0
+" let g:netrw_liststyle = 3
+" let g:netrw_browse_split = 4
+" let g:netrw_altv = 1
+" let g:netrw_winsize = 25
+" augroup ProjectDrawer
+"   autocmd!
+"   autocmd VimEnter * :Vexplore
+" augroup END
 
 "======================================
 " Markdown settings:
@@ -157,7 +163,7 @@ let g:mkdp_preview_options = {
     \ }
 
 " use a custom markdown style must be absolute path
-" like '/Users/username/markdown.css' or expand('~/markdown.css')
+" like '/users/username/markdown.css' or expand('~/markdown.css')
 let g:mkdp_markdown_css = ''
 
 " use a custom highlight style must absolute path
@@ -335,16 +341,6 @@ nmap ga <Plug>(EasyAlign)
 
 
 
-
-
-" NERD Tree
-" _____________
-
-let g:NERDTreeWinPos   = "right"
-let NERDTreeShowHidden = 0
-let NERDTreeIgnore     = ['\.pyc$', '__pycache__']
-let g:NERDTreeWinSize  = 35
-nnoremap <leader>n :NERDTreeToggle<cr>
 
 " ============================================================
 
@@ -666,6 +662,9 @@ nmap <F7> :ToggleClipBoard<CR>
 "==========================================================================
 " Status Line
 "==========================================================================
+
+autocmd User CocStatusChange redrawstatus
+
 set laststatus=2                                        " Enable the statusline
 set statusline=%!ActiveStatus()                         " Style it
 
@@ -697,6 +696,7 @@ function! PassiveStatus() abort                         " When in a non-active w
     let statusline.="%F/"                               " Full-path to current buffer
     let statusline.="\ \ "                              " Show Git branch, if applicable
     let statusline.="%=\ "                              " Switch to right-side
+    let statusline.="%{StatusDiagnostic()}\ \ " " Switch to right-side
     let statusline.="%p%%\ %y\ "                        " Filetype
     let statusline.="\|%4l\:%2c\|"                      " Line and column
     let statusline.="%#SpellBad#%{&spell?'[SPELL]':''}" " Spell flag
@@ -715,10 +715,10 @@ function! StatusDiagnostic() abort
   if empty(info) | return '' | endif
   let msgs = []
   if get(info, 'error', 0)
-    call add(msgs, 'X ' . info['error'])
+    call add(msgs, 'E:' . info['error'])
   endif
   if get(info, 'warning', 0)
-    call add(msgs, '!' . info['warning'])
+    call add(msgs, 'W:' . info['warning'])
   endif
   return join(msgs, ' '). ' ' . get(g:, 'coc_status', '')
 endfunction
@@ -761,6 +761,4 @@ set spelllang=en,ru           " Выбор языков словаря
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Pressing space-ss will toggle and untoggle spell checking
 map <leader>ss :setlocal spell!<cr>
-
-
 
