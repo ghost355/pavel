@@ -44,7 +44,7 @@ Plug 'tpope/vim-rhubarb'
 " повтор с точкой для плагинов
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-vinegar'
-
+Plug 'tpope/vim-abolish'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
@@ -57,13 +57,11 @@ Plug 'junegunn/goyo.vim'               " дзен режим
 Plug 'luochen1990/rainbow'
 
 
-
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 Plug 'vitalk/vim-simple-todo'
 
 call plug#end()
-
 set completeopt=menu,menuone,preview,noselect,noinsert
 
 "======================================
@@ -379,7 +377,7 @@ set nocompatible
 set history=1000
 
 " Time delay on <Leader> key
-set timeoutlen=500 ttimeoutlen=100
+set timeoutlen=1000 ttimeoutlen=100
 " Слишком паузы большие когда печатаешь
 autocmd BufEnter * if &buftype=="terminal" | set timeoutlen=50 |  endif
     
@@ -762,3 +760,7 @@ set spelllang=en,ru           " Выбор языков словаря
 " Pressing space-ss will toggle and untoggle spell checking
 map <leader>ss :setlocal spell!<cr>
 
+" close buffer without close split
+nnoremap <Leader>bd :bp\|bd #<CR>
+nnoremap <Leader>bn :bn<CR>
+nnoremap <Leader>bp :bp<CR>
