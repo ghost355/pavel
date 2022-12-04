@@ -1,8 +1,4 @@
 
-" Leader key to add extra key combinations
-let mapleader = ' '
-let g:mapleader = ' '
-
 "======================================
 " Plugin list:
 "======================================
@@ -18,12 +14,12 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Python wrapvirtualenv
 Plug 'jmcantrell/vim-virtualenv'
 
- " Темы                                      
+" Темы                                      
 Plug 'morhetz/gruvbox'                 " Gruvbox
 Plug 'tomasr/molokai'                  " Molokai
-Plug 'NLKNguyen/papercolor-theme'
+Plug 'NLKNguyen/papercolor-theme'      " PaperColor
 
-" Управление обрамляющими символами
+" Управление обрамляющими парными символами
 Plug 'tpope/vim-surround'
 " Плавный скроллинг
 Plug 'yuttie/comfortable-motion.vim'
@@ -37,14 +33,17 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 " команды Unix из командной строки
 Plug 'tpope/vim-eunuch'
-" авто настройка отступов
-" Plug 'tpope/vim-sleuth'
 " команды GitHub
 Plug 'tpope/vim-rhubarb'
 " повтор с точкой для плагинов
 Plug 'tpope/vim-repeat'
+" Улучшение netrw
 Plug 'tpope/vim-vinegar'
+" Улучшение аббревиатур и подстановки
 Plug 'tpope/vim-abolish'
+" авто настройка отступов
+" Plug 'tpope/vim-sleuth'
+
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
@@ -54,21 +53,30 @@ Plug 'godlygeek/tabular'               " выравнивание
 Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/goyo.vim'               " дзен режим
 
-Plug 'luochen1990/rainbow'
-
+Plug 'luochen1990/rainbow'             " цветные скобки
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 Plug 'vitalk/vim-simple-todo'
-
+Plug 'majutsushi/tagbar'
+Plug 'monkoose/fzf-hoogle.vim'
 call plug#end()
 set completeopt=menu,menuone,preview,noselect,noinsert
 
 "======================================
 " Plugin settings:
 "======================================
+
+
+" Hoogle
+let g:hoogle_fzf_window = {'center': '50%'}
+
+" Rainbow
+let g:rainbow_active = 1
+
+
 "======================================
-" Netrw settings:
+" Netrw settings:(override by vinegar plugin)
 "======================================
 " let g:netrw_banner = 0
 " let g:netrw_liststyle = 3
@@ -183,9 +191,7 @@ let g:mkdp_filetypes = ['markdown']
 " By default the theme is define according to the preferences of the system
 let g:mkdp_theme = 'light'
 
-"Rainbow
-let g:rainbow_active = 1
-
+" **************************************************
 " Coc settings
 " -----------------------------------
 " Всегда показывать строку для знаков слева от номера строик
@@ -212,21 +218,6 @@ function! CheckBackspace() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-" Use K to show documentation in preview window.
-nnoremap <silent> K :call ShowDocumentation()<CR>
-
 function! ShowDocumentation()
   if CocAction('hasProvider', 'hover')
     call CocActionAsync('doHover')
@@ -238,13 +229,6 @@ endfunction
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
-" Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
-
-" Formatting selected code.
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
-
 augroup mygroup
   autocmd!
   " Setup formatexpr specified filetype(s).
@@ -253,30 +237,6 @@ augroup mygroup
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
 
-" Applying codeAction to the selected region.
-" Example: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap keys for applying codeAction to the current buffer.
-nmap <leader>ac  <Plug>(coc-codeaction)
-" Apply AutoFix to problem on the current line.
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" Run the Code Lens action on the current line.
-nmap <leader>cl  <Plug>(coc-codelens-action)
-
-
-" Map function and class text objects
-" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
-xmap if <Plug>(coc-funcobj-i)
-omap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap af <Plug>(coc-funcobj-a)
-xmap ic <Plug>(coc-classobj-i)
-omap ic <Plug>(coc-classobj-i)
-xmap ac <Plug>(coc-classobj-a)
-omap ac <Plug>(coc-classobj-a)
 
 " Remap <C-f> and <C-b> for scroll float windows/popups.
 if has('nvim-0.4.0') || has('patch-8.2.0750')
@@ -287,11 +247,6 @@ if has('nvim-0.4.0') || has('patch-8.2.0750')
   vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
   vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
 endif
-
-" Use CTRL-S for selections ranges.
-" Requires 'textDocument/selectionRange' support of language server.
-nmap <silent> <C-s> <Plug>(coc-range-select)
-xmap <silent> <C-s> <Plug>(coc-range-select)
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocActionAsync('format')
@@ -306,39 +261,8 @@ command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.org
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
 " provide custom statusline: lightline.vim, vim-airline.
 
-" Mappings for CoCList
-" Show all diagnostics.
-nnoremap  <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions.
-nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
-" Show commands.
-nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document.
-nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols.
-nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list.
-nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
-
 " Autocometition off on FileTypes
 autocmd FileType markdown let b:coc_suggest_disable = 1
-
-
-" EasyAlign settings and map
-" __________________________
-
-" Start interactive EasyAlign in visual mode (e.g. vipga)
-xmap ga <Plug>(EasyAlign)
-
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
-
-
-
 
 " ============================================================
 
@@ -347,29 +271,16 @@ if !has('gui_running')
  set t_Co=256
 endif
 
-
 " XKB-Switch - включить
 let g:XkbSwitchEnabled = 1
-
-
-" comfortable-motion
-
-" let g:comfortable_motion_scroll_down_key = "j"
-" let g:comfortable_motion_scroll_up_key   = "k"
-
-
-
-"======================================
-" User Interface
-"======================================
-
-" Установить темный фон
-set background=dark
 
 
 "======================================
 " Основные настройки
 "======================================
+
+" Установить темный фон
+set background=dark
 
 " Disable vi compatibility
 set nocompatible
@@ -378,17 +289,17 @@ set history=1000
 
 " Time delay on <Leader> key
 set timeoutlen=1000 ttimeoutlen=100
+
 " Слишком паузы большие когда печатаешь
 autocmd BufEnter * if &buftype=="terminal" | set timeoutlen=50 |  endif
     
 autocmd BufLeave * if &buftype=="terminal" | set timeoutlen=500|  endif
 
-
 " Update time
 set updatetime=250
 
 " Open help in a vertical window
-cnoreabbrev h vert help
+" cnoreabbrev h vert help
 " Set inc/dec
 set nrformats-=octal
 
@@ -397,6 +308,7 @@ set virtualedit=onemore
 
 " Set X lines to the cursor when moving vertically
 set scrolloff=10
+
 " Show command keys pressed
 set showcmd
 
@@ -435,10 +347,7 @@ set mouse=a
 set cursorline
 set nocursorcolumn
 
-" Always show the status line
-" set laststatus=2
-
-" Change the cursor shape
+" Change the cursor shape in different modes
 let &t_SI = "\<Esc>[5 q"
 let &t_SR = "\<Esc>[3 q"
 let &t_EI = "\<Esc>[1 q"
@@ -462,13 +371,10 @@ set nowritebackup
 set encoding=utf8
 
 " Use Unix as the standard file type
-" set fileformats=unix,dos,mac
+set fileformats=unix,dos,mac
 
-" Autoread a file when it is changed from the outside
-cnoreabbrev help vert help
-
+" Обновлять файл если был изменен
 set autoread
-
 au FocusGained,BufEnter * checktime
 
 " Enable filetype plugins
@@ -485,7 +391,6 @@ set hidden
 
 " Ignore case when autocompletes when browsing files
 set fileignorecase
-
 
 " Remember info about open buffers on close
 set viminfo^=%
@@ -511,7 +416,6 @@ set whichwrap+=<,>,h,l
 set wrap
 
 " Don't break the words
-" Only works if I set nolist (F6)
 set linebreak
 
 " Stop automatic wrapping
@@ -522,7 +426,6 @@ set number
 
 " Set relative line numbers
 set relativenumber
-
 
 " относительные номера строк не видны в режиме вставки
 augroup every
@@ -561,36 +464,41 @@ set magic
 " Maximum amount of memory in Kbyte used for pattern matching
 set maxmempattern=1000
 
-
-
 " Свертка
 set foldmethod=indent
 set foldnestmax=3
 set nofoldenable
 
-
 " Add a bit extra margin to the left
 set foldcolumn=2
-
-" Показывать колонну на 100 символе строк (по счёту)
-" set colorcolumn=100
 
 " Подсвечивать строку на которой находится курсор
 set cursorline
 " Прекратить подсвечивать её при переходе в режим INSERT
 autocmd InsertEnter,InsertLeave * set cursorline!
 
-
 " Visual mode pressing * or # searches for the current selection
-" Super useful! From an idea by Michael Naumann
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
-" Disable highlight when <leader><cr> is pressed
-map <silent> <leader><cr> :noh<cr>
+function! VisualSelection(direction, extra_filter) range
+    let l:saved_reg = @"
+    execute "normal! vgvy"
 
+    let l:pattern = escape(@", "\\/.*'$^~[]")
+    let l:pattern = substitute(l:pattern, "\n$", "", "")
 
-" Delete trailing white space on save, useful for some filetypes ;)
+    if a:direction == 'gv'
+        call CmdLine("Ack '" . l:pattern . "' " )
+    elseif a:direction == 'replace'
+        call CmdLine("%s" . '/'. l:pattern . '/')
+    endif
+
+    let @/ = l:pattern
+    let @" = l:saved_reg
+endfunction
+
+" Удалять пробелы в конце при записи файла
 fun! CleanExtraSpaces()
     let save_cursor = getpos(".")
     let old_query = getreg('/')
@@ -603,33 +511,8 @@ if has("autocmd")
     autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
 endif
 
-" Don't close window, when deleting a buffer
-command! Bclose call <SID>BufcloseCloseIt()
-function! <SID>BufcloseCloseIt()
-    let l:currentBufNum = bufnr("%")
-    let l:alternateBufNum = bufnr("#")
-
-    if buflisted(l:alternateBufNum)
-        buffer #
-    else
-        bnext
-    endif
-
-    if bufnr("%") == l:currentBufNum
-        new
-    endif
-
-    if buflisted(l:currentBufNum)
-        execute("bdelete! ".l:currentBufNum)
-    endif
-endfunction
-
 " активировать .vimrc после сохранения файла
 autocmd! bufwritepost ~/.vimrc source ~/.vimrc
-
-" remap highlited search of current word with * and # to stay in place
-nnoremap * *``
-nnoremap # #``
 
 " Splits open more natural
 set splitbelow
@@ -654,9 +537,6 @@ if exists("*ToggleClipBoard") == 0
 	command ToggleClipBoard call ToggleClipBoard()
 endif
 
-nmap <F7> :ToggleClipBoard<CR>
-
-
 "==========================================================================
 " Status Line
 "==========================================================================
@@ -669,7 +549,6 @@ set statusline=%!ActiveStatus()                         " Style it
 " режим отображени статуса virualenv
 let g:virtualenv_stl_format = ' (%n) '
 
-
 function! ActiveStatus() abort                          " When in the active window
     let statusline=""                                   " Initialize it
 
@@ -679,7 +558,6 @@ function! ActiveStatus() abort                          " When in the active win
     let statusline.="%m"                                " Modified flag:
     let statusline.="%#NonText#\ \ %="                  " Show Git branch, if applicable
     let statusline.="%{coc#status()}\ \ " " Switch to right-side
-    " let statusline.="%{StatusDiagnostic()}\ \ " " Switch to right-side
     let statusline.="%#StatusLine#\ %p%%\ %y\ "                      " Filetype
     let statusline.="%"                                 " Color change (see :hi)
     let statusline.="\|%2l\:%2c\|"                      " Line and column
@@ -708,25 +586,6 @@ endfunction
      autocmd WinLeave * setlocal statusline=%!PassiveStatus()
  augroup END
 
-function! StatusDiagnostic() abort
-  let info = get(b:, 'coc_diagnostic_info', {})
-  if empty(info) | return '' | endif
-  let msgs = []
-  if get(info, 'error', 0)
-    call add(msgs, 'E:' . info['error'])
-  endif
-  if get(info, 'warning', 0)
-    call add(msgs, 'W:' . info['warning'])
-  endif
-  return join(msgs, ' '). ' ' . get(g:, 'coc_status', '')
-endfunction
-
-" Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Turn persistent undo on 
 "    means that you can undo even when you close a buffer/VIM
@@ -737,30 +596,152 @@ try
 catch
 endtry
 
-" TODO list fast command
+" ToDo list fast command
 command! Todo :e TODO.md
-nnoremap <Leader><Esc> :Todo<CR>
 
 " # Disable default key bindings
 let g:simple_todo_map_keys=0
 
-" # Map your keys
+
+set spelllang=en,ru           " Выбор языков словаря
+
+" ************************************************************
+" Все клавиатурные сокращения в одном месте
+" ************************************************************
+
+" Leader  
+let mapleader = ' '            
+
+" Tagbar 
+nmap <F8> :TagbarToggle<CR>
+
+" Fzf-vim 
+nnoremap <Leader>ff :Files<CR>
+nnoremap <Leader>fF :Files 
+nnoremap <Leader>fb :Buffers<CR>
+nnoremap <Leader>fl :BLines<CR>
+nnoremap <Leader>fm :Marks<CR>
+nnoremap <Leader>fw :Windows<CR>
+nnoremap <Leader>fh :Helptags<CR>
+nnoremap <Leader>fk :Maps<CR>
+nnoremap <Leader>f: :History:<CR>
+nnoremap <Leader>f/ :History/<CR>
+nnoremap <Leader>fH :Hoogle<CR>
+
+" Coc mappings ==============START==============
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+" Symbol renaming.
+nmap <leader>rn <Plug>(coc-rename)
+
+" Formatting selected code.
+xmap <leader>F  <Plug>(coc-format-selected)
+nmap <leader>F  <Plug>(coc-format-selected)
+
+" Applying codeAction to the selected region.
+" Example: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap keys for applying codeAction to the current buffer.
+nmap <leader>ac  <Plug>(coc-codeaction-cursor)
+nmap <leader>al  <Plug>(coc-codeaction-line)
+"rApply AutoFix to problem on the current line.
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Run the Code Lens action on the current line.
+nmap <leader>L  <Plug>(coc-codelens-action)
+
+" Map function and class text objects
+" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
+xmap if <Plug>(coc-funcobj-i)
+omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-classobj-i)
+omap ic <Plug>(coc-classobj-i)
+xmap ac <Plug>(coc-classobj-a)
+omap ac <Plug>(coc-classobj-a)
+
+" Use CTRL-S for selections ranges.
+" Requires 'textDocument/selectionRange' support of language server.
+nmap <silent> <C-s> <Plug>(coc-range-select)
+xmap <silent> <C-s> <Plug>(coc-range-select)
+
+" Mappings for CoCList
+" Show all diagnostics.
+nnoremap  <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions.
+nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
+" Show commands.
+nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document.
+nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols.
+nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list.
+nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+" Coc mappings ========= END ==============
+
+" EasyAlign settings and map
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+
+" comfortable-motion
+let g:comfortable_motion_scroll_down_key = "j"
+let g:comfortable_motion_scroll_up_key   = "k"
+
+" Disable highlight when <leader><cr> is pressed
+noremap <silent> <leader><cr> :noh<cr>
+
+" remap highlited search of current word with * and # to stay in place
+nnoremap * *``
+nnoremap # #``
+
+nmap <F7> :ToggleClipBoard<CR>
+
+" Smart way to move between windows
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
+
+"ToDo
+nnoremap <Leader><Esc> :Todo<CR>
+
+" Mapping ToDo keys
 nnoremap <Leader>I <Plug>(simple-todo-new)
 nnoremap <Leader>i <Plug>(simple-todo-new-start-of-line)
 nnoremap <Leader>o <Plug>(simple-todo-below)
 nnoremap <Leader>O <Plug>(simple-todo-above)
 nnoremap <Leader>x <Plug>(simple-todo-mark-switch)
 
-
-
-set spelllang=en,ru           " Выбор языков словаря
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Spell checking
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Pressing space-ss will toggle and untoggle spell checking
+" Вкл/выкл проверки слов по словарю
 map <leader>ss :setlocal spell!<cr>
 
 " close buffer without close split
-nnoremap <Leader>bd :bp\|bd #<CR>
+nnoremap <Leader>bd :Bdelete<CR>
+nnoremap <Leader>bD :bufdo :Bdelete<CR>
 nnoremap <Leader>bn :bn<CR>
 nnoremap <Leader>bp :bp<CR>
+
+" __________________________________________________
