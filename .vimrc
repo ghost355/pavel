@@ -1,4 +1,3 @@
-
 "======================================
 " Plugin list:
 "======================================
@@ -8,7 +7,7 @@ call plug#begin()
 " Поддержка русского языка при переключении режимов
 Plug 'lyokha/vim-xkbswitch'
 
-" Use release branch (recommend)
+" Coc - Use release branch (recommend)
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Python wrapvirtualenv
@@ -23,8 +22,6 @@ Plug 'NLKNguyen/papercolor-theme'      " PaperColor
 Plug 'tpope/vim-surround'
 " Плавный скроллинг
 Plug 'yuttie/comfortable-motion.vim'
-" навигация по буквенным символам
-Plug 'easymotion/vim-easymotion'
 " много функций в сочетании с [ и ]
 Plug 'tpope/vim-unimpaired'
 " простые коментарии
@@ -60,6 +57,11 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': 
 Plug 'vitalk/vim-simple-todo'
 Plug 'majutsushi/tagbar'
 Plug 'monkoose/fzf-hoogle.vim'
+Plug 'kana/vim-textobj-entire'
+Plug 'kana/vim-textobj-user'
+
+
+
 call plug#end()
 set completeopt=menu,menuone,preview,noselect,noinsert
 
@@ -67,13 +69,11 @@ set completeopt=menu,menuone,preview,noselect,noinsert
 " Plugin settings:
 "======================================
 
-
 " Hoogle
 let g:hoogle_fzf_window = {'center': '50%'}
 
 " Rainbow
 let g:rainbow_active = 1
-
 
 "======================================
 " Netrw settings:(override by vinegar plugin)
@@ -237,7 +237,6 @@ augroup mygroup
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
 
-
 " Remap <C-f> and <C-b> for scroll float windows/popups.
 if has('nvim-0.4.0') || has('patch-8.2.0750')
   nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
@@ -257,19 +256,11 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 " Add `:OR` command for organize imports of the current buffer.
 command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
 
-" Add (Neo)Vim's native statusline support.
-" NOTE: Please see `:h coc-status` for integrations with external plugins that
-" provide custom statusline: lightline.vim, vim-airline.
-
-" Autocometition off on FileTypes
+" Autocometition off for some FileTypes
 autocmd FileType markdown let b:coc_suggest_disable = 1
+autocmd FileType text let b:coc_suggest_disable = 1
 
 " ============================================================
-
-" Если не GUI vim устанавливать 256 цветов в терминале
-if !has('gui_running')
- set t_Co=256
-endif
 
 " XKB-Switch - включить
 let g:XkbSwitchEnabled = 1
@@ -278,6 +269,11 @@ let g:XkbSwitchEnabled = 1
 "======================================
 " Основные настройки
 "======================================
+
+" Если не GUI vim устанавливать 256 цветов в терминале
+if !has('gui_running')
+ set t_Co=256
+endif
 
 " Установить темный фон
 set background=dark
@@ -572,7 +568,6 @@ function! PassiveStatus() abort                         " When in a non-active w
     let statusline.="%F/"                               " Full-path to current buffer
     let statusline.="\ \ "                              " Show Git branch, if applicable
     let statusline.="%=\ "                              " Switch to right-side
-    let statusline.="%{StatusDiagnostic()}\ \ " " Switch to right-side
     let statusline.="%p%%\ %y\ "                        " Filetype
     let statusline.="\|%4l\:%2c\|"                      " Line and column
     let statusline.="%#SpellBad#%{&spell?'[SPELL]':''}" " Spell flag
@@ -602,11 +597,10 @@ command! Todo :e TODO.md
 " # Disable default key bindings
 let g:simple_todo_map_keys=0
 
-
 set spelllang=en,ru           " Выбор языков словаря
 
 " ************************************************************
-" Все клавиатурные сокращения в одном месте
+"          Все клавиатурные сокращения в одном месте
 " ************************************************************
 
 " Leader  
@@ -619,6 +613,7 @@ nmap <F8> :TagbarToggle<CR>
 nnoremap <Leader>ff :Files<CR>
 nnoremap <Leader>fF :Files 
 nnoremap <Leader>fb :Buffers<CR>
+nnoremap <Leader>fc :Commands<CR>
 nnoremap <Leader>fl :BLines<CR>
 nnoremap <Leader>fm :Marks<CR>
 nnoremap <Leader>fw :Windows<CR>
@@ -744,4 +739,23 @@ nnoremap <Leader>bD :bufdo :Bdelete<CR>
 nnoremap <Leader>bn :bn<CR>
 nnoremap <Leader>bp :bp<CR>
 
-" __________________________________________________
+" Open window splits in various places
+nnoremap <silent><leader>wh :leftabove  vnew<CR>
+nnoremap <silent><leader>wl :rightbelow vnew<CR>
+nnoremap <silent><leader>wk :leftabove  new<CR>
+nnoremap <silent><leader>wj :rightbelow new<CR>
+
+" Window close
+nnoremap <leader>wc <C-W>c
+
+" Haskell GHCI
+nnoremap <leader>h :term ghci<CR>
+
+" Copy to OS buffe
+nnoremap <leader>Y mggg"+yG`gzz
+nnoremap <leader>y "+y
+vnoremap <leader>y "+y
+
+
+nnoremap n nzz
+nnoremap N Nzz
